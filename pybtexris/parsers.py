@@ -59,9 +59,9 @@ class RISParser(BaseParser):
         ris_type = ris_type[0]
         ris_description = None
         if ris_type in self.ris_type_description.values():
-            index = self.ris_type_description.values().index(ris_type)
+            index = list(self.ris_type_description.values()).index(ris_type)
             ris_description = ris_type
-            ris_type = self.ris_type_description.keys()[index]
+            ris_type = list(self.ris_type_description.keys())[index]
             
         ris_type = ris_type.upper()
         if not ris_description:

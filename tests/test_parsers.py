@@ -91,6 +91,37 @@ class TestSingleJournal(ParserTest, TestCase):
     correct_result = shannon1948
 
 
+class TestSingleBookChapter(ParserTest, TestCase):
+    input_string = """
+        TY  - Book Section
+        AU  - Robert Turnbull
+        A2  - George Kiraz
+        A2  - Schmidtke, Sabine
+        CY  - Piscataway, N.J.
+        PB  - Gorgias
+        PY  - 2021
+        TI  - Can manuscript headings prove that there were Arabic Gospels before the Qurʾān?
+        T2  - Scribal Habits in Near Eastern Manuscript Traditions
+        SP  - 291
+        EP  - 308
+        ER  - 
+    """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
+    correct_result = BibliographyData(
+  entries=OrderedCaseInsensitiveDict([
+    ('Turnbull2021', Entry('incollection',
+      fields=[
+        ('type', 'Book Section'), 
+        ('title', 'Can manuscript headings prove that there were Arabic Gospels before the Qurʾān?'), 
+        ('booktitle', 'Scribal Habits in Near Eastern Manuscript Traditions'), 
+        ('publisher', 'Gorgias'), 
+        ('address', 'Piscataway, N.J.'), 
+        ('pages', '291--308'), 
+        ('year', '2021')],
+      persons=OrderedCaseInsensitiveDict([('author', [Person('Turnbull, Robert')]), ('editor', [Person('Kiraz, George'), Person('Schmidtke, Sabine')])])))]),
+
+  preamble=[])
+
+
 class TestMultiEntry(ParserTest, TestCase):
     input_string = """
         TY  - JOUR
