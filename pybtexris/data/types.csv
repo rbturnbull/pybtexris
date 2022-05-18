@@ -1,0 +1,48 @@
+RIS,Name,bibtex
+GEN,Generic,misc
+"ABST, INPR, JFULL, JOUR",Journal Article,article
+AGGR,Aggregated Database,misc
+ANCIENT,Ancient Text,misc
+ART,Artwork,misc
+"ADVS, SLIDE, SOUND, VIDEO",Audiovisual Material,misc
+"BILL, UNBILL","Bill, Unenacted Bill",misc
+BLOG,Blog,misc
+BOOK,Book,book
+CHAP,Book Section,incollection
+CASE,Case,misc
+CTLG,Catalog,book
+"CHART, EQUA","Chart, Equation",misc
+CLSWK,Classical Work,misc
+"COMP, DATA",Computer Program,misc
+CPAPER,Conference Paper,inproceedings
+CONF,Conference Proceedings,inproceedings
+DATA,Data File,misc
+DICT,Dictionary,book
+EDBOOK,Edited Book,book
+EJOUR,Electronic Article,article
+EBOOK,Electronic Book,book
+ECHAP,Electronic Book Section,incollection
+ENCYC,Encyclopedia,book
+FIGURE,Figure,misc
+MPCT,Filmor Broadcast,misc
+GOVDOC,Government Document,misc
+GRANT,Grant,misc
+HEAR,Hearing,misc
+LEGAL,Legal Rule,misc
+MGZN,Magazine Article,misc
+MANSCPT,Manuscript,misc
+MAP,Map,misc
+MUSIC,Music,misc
+NEWS,Newspaper Article,misc
+DBASE,Online Database,misc
+MULTI,Online Multimedia,misc
+PAMP,Pamphlet,booklet
+PAT,Patent,misc
+"PCOMM, ICOMM",Personal Communication,misc
+RPRT,Report,techreport
+SER,Serial,misc
+STAND,Standard,misc
+STAT,Statute,misc
+THES,Thesis,misc
+UNPB,Unpublished Work,unpublished
+ELEC,Web Page,misc

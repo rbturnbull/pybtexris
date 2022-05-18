@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "pybtexris"
+version = "0.1.0"
+description = "A pybtex plugin for inputting and outputting RIS files."
+authors = ["Robert Turnbull <robert.turnbull@unimelb.edu.au>"]
+license = "Apache-2.0"
+readme = "README.rst"
+
+[tool.poetry.dependencies]
+python = "^3.7.1"
+pybtex = "^0.24.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+
+[pybtex.database.input]
+"ris" = "pybtexris:RISParser"
+
+[pybtex.database.input.suffixes]
+".ris" = "pybtexris.RISParser"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
