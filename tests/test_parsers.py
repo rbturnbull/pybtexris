@@ -190,30 +190,72 @@ class TestMultiAuthor(ParserTest, TestCase):
         ER  - 
     """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
     correct_result = BibliographyData(
-  entries=OrderedCaseInsensitiveDict([
-    ('Seemann2020', Entry('article',
-      fields=[
-        ('type', 'Journal Article'), 
-        ('title', 'Tracking the COVID-19 pandemic in Australia using genomics'), 
-        ('journal', 'Nature Communications'), 
-        ('number', '1'), 
-        ('doi', '10.1038/s41467-020-18314-x'), 
-        ('volume', '11'), 
-        ('pages', '4376'), 
-        ('url', 'https://doi.org/10.1038/s41467-020-18314-x'), 
-        ('year', '2020'), 
-        ('abstract', 'Genomic sequencing has significant potential to inform public health management for SARS-CoV-2. Here we report high-throughput genomics for SARS-CoV-2, sequencing 80% of cases in Victoria, Australia (population 6.24 million) between 6 January and 14 April 2020 (total 1,333 COVID-19 cases). We integrate epidemiological, genomic and phylodynamic data to identify clusters and impact of interventions. The global diversity of SARS-CoV-2 is represented, consistent with multiple importations. Seventy-six distinct genomic clusters were identified, including large clusters associated with social venues, healthcare and cruise ships. Sequencing sequential samples from 98 patients reveals minimal intra-patient SARS-CoV-2 genomic diversity. Phylodynamic modelling indicates a significant reduction in the effective viral reproductive number (Re) from 1.63 to 0.48 after implementing travel restrictions and physical distancing. Our data provide a concrete framework for the use of SARS-CoV-2 genomics in public health responses, including its use to rapidly identify SARS-CoV-2 transmission chains, increasingly important as social restrictions ease globally.'), 
-        ('issn', '2041-1723'), 
-        ('DA', '2020/09/01')],
-      persons=OrderedCaseInsensitiveDict([('author', [Person('Seemann, Torsten'), Person('Lane, Courtney R.'), Person('Sherry, Norelle L.'), Person('Duchene, Sebastian'), Person('Gonçalves da Silva, Anders'), Person('Caly, Leon'), Person('Sait, Michelle'), Person('Ballard, Susan A.'), Person('Horan, Kristy'), Person('Schultz, Mark B.'), Person('Hoang, Tuyet'), Person('Easton, Marion'), Person('Dougall, Sally'), Person('Stinear, Timothy P.'), Person('Druce, Julian'), Person('Catton, Mike'), Person('Sutton, Brett'), Person('van Diemen, Annaliese'), Person('Alpren, Charles'), Person('Williamson, Deborah A.'), Person('Howden, Benjamin P.')])])))]),
-
-  preamble=[])
+        entries=OrderedCaseInsensitiveDict(
+            [
+                (
+                    'Seemann2020',
+                    Entry(
+                        'article',
+                        fields=[
+                            ('type', 'Journal Article'),
+                            ('title', 'Tracking the COVID-19 pandemic in Australia using genomics'),
+                            ('journal', 'Nature Communications'),
+                            ('number', '1'),
+                            ('doi', '10.1038/s41467-020-18314-x'),
+                            ('volume', '11'),
+                            ('pages', '4376'),
+                            ('url', 'https://doi.org/10.1038/s41467-020-18314-x'),
+                            ('year', '2020'),
+                            (
+                                'abstract',
+                                'Genomic sequencing has significant potential to inform public health management for SARS-CoV-2. Here we report high-throughput genomics for SARS-CoV-2, sequencing 80% of cases in Victoria, Australia (population 6.24 million) between 6 January and 14 April 2020 (total 1,333 COVID-19 cases). We integrate epidemiological, genomic and phylodynamic data to identify clusters and impact of interventions. The global diversity of SARS-CoV-2 is represented, consistent with multiple importations. Seventy-six distinct genomic clusters were identified, including large clusters associated with social venues, healthcare and cruise ships. Sequencing sequential samples from 98 patients reveals minimal intra-patient SARS-CoV-2 genomic diversity. Phylodynamic modelling indicates a significant reduction in the effective viral reproductive number (Re) from 1.63 to 0.48 after implementing travel restrictions and physical distancing. Our data provide a concrete framework for the use of SARS-CoV-2 genomics in public health responses, including its use to rapidly identify SARS-CoV-2 transmission chains, increasingly important as social restrictions ease globally.',
+                            ),
+                            ('issn', '2041-1723'),
+                            ('DA', '2020/09/01'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict(
+                            [
+                                (
+                                    'author',
+                                    [
+                                        Person('Seemann, Torsten'),
+                                        Person('Lane, Courtney R.'),
+                                        Person('Sherry, Norelle L.'),
+                                        Person('Duchene, Sebastian'),
+                                        Person('Gonçalves da Silva, Anders'),
+                                        Person('Caly, Leon'),
+                                        Person('Sait, Michelle'),
+                                        Person('Ballard, Susan A.'),
+                                        Person('Horan, Kristy'),
+                                        Person('Schultz, Mark B.'),
+                                        Person('Hoang, Tuyet'),
+                                        Person('Easton, Marion'),
+                                        Person('Dougall, Sally'),
+                                        Person('Stinear, Timothy P.'),
+                                        Person('Druce, Julian'),
+                                        Person('Catton, Mike'),
+                                        Person('Sutton, Brett'),
+                                        Person('van Diemen, Annaliese'),
+                                        Person('Alpren, Charles'),
+                                        Person('Williamson, Deborah A.'),
+                                        Person('Howden, Benjamin P.'),
+                                    ],
+                                )
+                            ]
+                        ),
+                    ),
+                )
+            ]
+        ),
+        preamble=[],
+    )
 
 
 class TestBook(ParserTest, TestCase):
     """
     Testing example from http://refdb.sourceforge.net/examples.html
     """
+
     input_string = """
         TY  - BOOK
         AU  - Miller,A.
@@ -234,19 +276,33 @@ class TestBook(ParserTest, TestCase):
         ER  - 
     """
     correct_result = BibliographyData(
-  entries=OrderedCaseInsensitiveDict([
-    ('Miller1999', Entry('book',
-      fields=[
-        ('type', 'Book'), 
-        ('title', 'My first book about dinosaurs'), 
-        ('series', 'My first book series'), 
-        ('publisher', "O'Reilly"), 
-        ('address', 'Sebastopol'), 
-        ('url', 'http://www.address.com'), 
-        ('keywords', 'dinosaurs | evolution | animals'), 
-        ('note', 'In my opinion this is not bad, after all | Dinosaurs were big animals that ate a lot'), 
-        ('year', '1999'), 
-        ('isbn', '1-56592-580-7')],
-      persons=OrderedCaseInsensitiveDict([('author', [Person('Miller, A.'), Person('Myers, B.')]), ('editor', [Person('Smith, K.')])])))]),
-
-  preamble=[])
+        entries=OrderedCaseInsensitiveDict(
+            [
+                (
+                    'Miller1999',
+                    Entry(
+                        'book',
+                        fields=[
+                            ('type', 'Book'),
+                            ('title', 'My first book about dinosaurs'),
+                            ('series', 'My first book series'),
+                            ('publisher', "O'Reilly"),
+                            ('address', 'Sebastopol'),
+                            ('url', 'http://www.address.com'),
+                            ('keywords', 'dinosaurs | evolution | animals'),
+                            (
+                                'note',
+                                'In my opinion this is not bad, after all | Dinosaurs were big animals that ate a lot',
+                            ),
+                            ('year', '1999'),
+                            ('isbn', '1-56592-580-7'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict(
+                            [('author', [Person('Miller, A.'), Person('Myers, B.')]), ('editor', [Person('Smith, K.')])]
+                        ),
+                    ),
+                )
+            ]
+        ),
+        preamble=[],
+    )
