@@ -1,9 +1,9 @@
-
 from unittest import TestCase
 from itertools import zip_longest
 from pybtex.database import BibliographyData, Entry, Person
 from pybtex.utils import OrderedCaseInsensitiveDict
 from pybtexris import RISParser
+
 
 class _TestParser(RISParser):
     def __init__(self, *args, **kwargs):
@@ -26,7 +26,7 @@ class ParserTest(object):
             self.input_strings = [self.input_string]
 
     def test_parser(self):
-        parser = _TestParser(encoding='UTF-8', **self.parser_options)
+        parser = _TestParser(encoding="UTF-8", **self.parser_options)
         for input_string in self.input_strings:
             parser.parse_string(input_string)
         result = parser.data
@@ -38,12 +38,12 @@ class ParserTest(object):
 
 
 class EmptyDataTest(ParserTest, TestCase):
-    input_string = u''
+    input_string = ""
     correct_result = BibliographyData()
 
 
 class BracesTest(ParserTest, TestCase):
-    input_string = u"""TY  - JOUR
+    input_string = """TY  - JOUR
         AU  - Shannon, Claude E.
         PY  - 1948
         DA  - July
@@ -53,15 +53,25 @@ class BracesTest(ParserTest, TestCase):
         EP  - 423
         VL  - 27
         ER  - 
-    """ # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
-    # correct_result = BibliographyData([(u'test', Entry('article', [(u'title', 'Polluted with {DDT}.')]))])
-    correct_result = BibliographyData([
-        ("Shannon1948", Entry('article',
-  fields=[
-    ('type', 'Journal Article'), 
-    ('title', 'A Mathematical Theory of Communication'), 
-    ('volume', '27'), 
-    ('pages', '379--423'), 
-    ('year', '1948'), 
-    ('month', 'July')],
-  persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])])))])
+    """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
+    correct_result = BibliographyData(
+        [
+            (
+                "Shannon1948",
+                Entry(
+                    "article",
+                    fields=[
+                        ("type", "Journal Article"),
+                        ("title", "A Mathematical Theory of Communication"),
+                        ("volume", "27"),
+                        ("pages", "379--423"),
+                        ("year", "1948"),
+                        ("month", "July"),
+                    ],
+                    persons=OrderedCaseInsensitiveDict(
+                        [("author", [Person("Shannon, Claude E.")])]
+                    ),
+                ),
+            )
+        ]
+    )

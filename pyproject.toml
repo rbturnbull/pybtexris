@@ -12,6 +12,17 @@ pybtex = "^0.24.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
+black = "^22.3.0"
+
+[tool.black]
+line-length = 120
+skip_string_normalization = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
 
 [pybtex.database.input]
 "ris" = "pybtexris:RISParser"
