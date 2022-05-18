@@ -32,7 +32,7 @@ jobs:
       uses: schneegans/dynamic-badges-action@v1.1.0 # instructions here: https://github.com/Schneegans/dynamic-badges-action
       with:
         auth: ${{ secrets.GIST_SECRET }}
-        gistID: 506563cd9b49c8126284e34864c862d0
+        gistID: 665c8745fce7077155f99ad694a7e762
         filename: coverage-badge.json
         label: coverage
         message: ${{ env.COVERAGE }}
