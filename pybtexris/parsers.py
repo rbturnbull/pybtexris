@@ -38,18 +38,6 @@ class RISParser(BaseParser):
         text = stream.read()
         return self.parse_string(text)
 
-# """
-# TY  - JOUR
-# AU  - Shannon, Claude E.
-# PY  - 1948
-# DA  - July
-# TI  - A Mathematical Theory of Communication
-# T2  - Bell System Technical Journal
-# SP  - 379
-# EP  - 423
-# VL  - 27
-# ER  - 
-# """
     def process_entry(self, entry_text):
         """
         https://github.com/aurimasv/translators/wiki/RIS-Tag-Map
@@ -57,7 +45,7 @@ class RISParser(BaseParser):
         # Read entry into dictionary
         ris_dict = dict()
         for line in entry_text.split('\n'):
-            m = re.match(r"^([A-Z]{2})\s*-\s*(.*)$", line.strip())
+            m = re.match(r"^([A-Z0-9]{2})\s*-\s*(.*)$", line.strip())
             if not m:
                 continue
 
@@ -106,14 +94,34 @@ class RISParser(BaseParser):
         def add_field(code, bibtex_field):
             value = ris_dict.pop(code, None)
             if value:
-                entry.fields[bibtex_field] = value
+                if bibtex_field in entry.fields:
+                    entry.fields[bibtex_field] += f"| value"
+                else:
+                    entry.fields[bibtex_field] = value
 
         add_field("TI", "title")
+        if "title" not in entry.fields:
+            add_field("T1", "title")
+        add_field("JO", "journal")
+        
+        bibtex_t2 = None
+        if ris_type in ["ABST","INPR","JFULL","JOUR", "EJOUR"]:
+            bibtex_t2 = "journal"
+        elif ris_type in ["ANCIENT","CHAP", "ECHAP"]:
+            bibtex_t2 = "booktitle"
+        elif ris_type in ["BOOK","CTLG", "CLSWK", "COMP", "DATA", "MPCT", "MAP", "MULTI", "RPRT", "UNPB", "ELEC"]:
+            bibtex_t2 = "series"
+        if bibtex_t2:
+            add_field("T2", bibtex_t2)
+            
+        add_field("IS", "number")
         add_field("DO", "doi")
         add_field("VL", "volume")
         add_field("SP", "pages")
         add_field("UR", "URL")
         add_field("PY", "year")
+        if "year" not in entry.fields:
+            add_field("Y1", "year")
 
         # Check if DA field could be a month
         da = ris_dict.get("DA", None)
@@ -153,10 +161,6 @@ class RISParser(BaseParser):
             entry_key += entry.fields["year"]
 
         return entry_key,entry
-
-            # if key_lower in Person.valid_roles:
-            #     for names in value:
-            #         bib_entry.add_person(Person(**names), key)
 
     def parse_string(self, text):
         self.unnamed_entry_counter = 1

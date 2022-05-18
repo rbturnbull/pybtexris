@@ -31,7 +31,12 @@ class ParserTest(object):
             parser.parse_string(input_string)
         result = parser.data
         correct_result = self.correct_result
-        assert result == correct_result
+
+        print("Expected result:")
+        print(correct_result)
+        print("Parsed result:")
+        print(result)
+        assert result == correct_result, f"Parsed result:\n--------\n{result}\n--------\nis not the same as expected:\n--------\n{correct_result}"
         for error, correct_error in zip_longest(parser.errors, self.errors):
             actual_error = str(error)
             assert actual_error == correct_error
@@ -42,8 +47,9 @@ class EmptyDataTest(ParserTest, TestCase):
     correct_result = BibliographyData()
 
 
-class BracesTest(ParserTest, TestCase):
-    input_string = """TY  - JOUR
+class TestSingleJournal(ParserTest, TestCase):
+    input_string = """
+        TY  - JOUR
         AU  - Shannon, Claude E.
         PY  - 1948
         DA  - July
@@ -55,23 +61,65 @@ class BracesTest(ParserTest, TestCase):
         ER  - 
     """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
     correct_result = BibliographyData(
-        [
-            (
-                "Shannon1948",
-                Entry(
-                    "article",
-                    fields=[
-                        ("type", "Journal Article"),
-                        ("title", "A Mathematical Theory of Communication"),
-                        ("volume", "27"),
-                        ("pages", "379--423"),
-                        ("year", "1948"),
-                        ("month", "July"),
-                    ],
-                    persons=OrderedCaseInsensitiveDict(
-                        [("author", [Person("Shannon, Claude E.")])]
-                    ),
-                ),
-            )
-        ]
-    )
+  entries=OrderedCaseInsensitiveDict([
+    ('Shannon1948', Entry('article',
+      fields=[
+        ('type', 'Journal Article'), 
+        ('title', 'A Mathematical Theory of Communication'), 
+        ('journal', 'Bell System Technical Journal'), 
+        ('volume', '27'), 
+        ('pages', '379--423'), 
+        ('year', '1948'), 
+        ('month', 'July')],
+      persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])])))]),
+
+  preamble=[])
+
+
+class TestMulti(ParserTest, TestCase):
+    input_string = """
+        TY  - JOUR
+        AU  - Shannon, Claude E.
+        PY  - 1948
+        DA  - July
+        TI  - A Mathematical Theory of Communication
+        T2  - Bell System Technical Journal
+        SP  - 379
+        EP  - 423
+        VL  - 27
+        ER  - 
+        TY  - JOUR
+        T1  - On computable numbers, with an application to the Entscheidungsproblem
+        A1  - Turing, Alan Mathison
+        JO  - Proc. of London Mathematical Society
+        VL  - 47
+        IS  - 1
+        SP  - 230
+        EP  - 265
+        Y1  - 1937
+        ER  - 
+    """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
+    correct_result = BibliographyData(
+  entries=OrderedCaseInsensitiveDict([
+    ('Shannon1948', Entry('article',
+      fields=[
+        ('type', 'Journal Article'), 
+        ('title', 'A Mathematical Theory of Communication'), 
+        ('journal', 'Bell System Technical Journal'), 
+        ('volume', '27'), 
+        ('pages', '379--423'), 
+        ('year', '1948'), 
+        ('month', 'July')],
+      persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])]))), 
+    ('Turing1937', Entry('article',
+      fields=[
+        ('type', 'Journal Article'), 
+        ('title', 'On computable numbers, with an application to the Entscheidungsproblem'), 
+        ('journal', 'Proc. of London Mathematical Society'), ('number', '1'), 
+        ('volume', '47'), 
+        ('pages', '230--265'), 
+        ('year', '1937')],
+      persons=OrderedCaseInsensitiveDict([('author', [Person('Turing, Alan Mathison')])])))]),
+
+  preamble=[])
+
