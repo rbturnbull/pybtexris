@@ -5,7 +5,8 @@ from pybtex.utils import OrderedCaseInsensitiveDict
 from pybtexris import RISParser
 from pathlib import Path
 
-files_dir = Path(__file__).parent/"files"
+files_dir = Path(__file__).parent / "files"
+
 
 class _TestParser(RISParser):
     def __init__(self, *args, **kwargs):
@@ -39,6 +40,7 @@ shannon1948 = BibliographyData(
     ),
     preamble=[],
 )
+
 
 class ParserTest(object):
     input_string = None
@@ -107,19 +109,94 @@ class TestSingleBookChapter(ParserTest, TestCase):
         ER  - 
     """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
     correct_result = BibliographyData(
-  entries=OrderedCaseInsensitiveDict([
-    ('Turnbull2021', Entry('incollection',
-      fields=[
-        ('type', 'Book Section'), 
-        ('title', 'Can manuscript headings prove that there were Arabic Gospels before the Qurʾān?'), 
-        ('booktitle', 'Scribal Habits in Near Eastern Manuscript Traditions'), 
-        ('publisher', 'Gorgias'), 
-        ('address', 'Piscataway, N.J.'), 
-        ('pages', '291--308'), 
-        ('year', '2021')],
-      persons=OrderedCaseInsensitiveDict([('author', [Person('Turnbull, Robert')]), ('editor', [Person('Kiraz, George'), Person('Schmidtke, Sabine')])])))]),
+        entries=OrderedCaseInsensitiveDict(
+            [
+                (
+                    'Turnbull2021',
+                    Entry(
+                        'incollection',
+                        fields=[
+                            ('type', 'Book Section'),
+                            (
+                                'title',
+                                'Can manuscript headings prove that there were Arabic Gospels before the Qurʾān?',
+                            ),
+                            ('booktitle', 'Scribal Habits in Near Eastern Manuscript Traditions'),
+                            ('publisher', 'Gorgias'),
+                            ('address', 'Piscataway, N.J.'),
+                            ('pages', '291--308'),
+                            ('year', '2021'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict(
+                            [
+                                ('author', [Person('Turnbull, Robert')]),
+                                ('editor', [Person('Kiraz, George'), Person('Schmidtke, Sabine')]),
+                            ]
+                        ),
+                    ),
+                )
+            ]
+        ),
+        preamble=[],
+    )
 
-  preamble=[])
+
+class TestBlog(ParserTest, TestCase):
+    input_string = """
+        TY  - Blog
+        TI  - Fantastic blog post
+        UR  - https://blog.example.com
+        ER  - 
+    """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
+    correct_result = BibliographyData(
+        entries=OrderedCaseInsensitiveDict(
+            [
+                (
+                    'Fantastic.blog.post',
+                    Entry(
+                        'misc',
+                        fields=[
+                            ('type', 'Blog'),
+                            ('title', 'Fantastic blog post'),
+                            ('url', 'https://blog.example.com'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict([]),
+                    ),
+                )
+            ]
+        ),
+        preamble=[],
+    )
+
+
+class TestManuscript(ParserTest, TestCase):
+    input_string = """
+        TY  - MANSCPT
+        CN  - Sinai ar. NF Parch 8
+        PY  - 856
+        EP  - 625
+        ER  - 
+    """
+    correct_result = BibliographyData(
+        entries=OrderedCaseInsensitiveDict(
+            [
+                (
+                    'Unknown856',
+                    Entry(
+                        'misc',
+                        fields=[
+                            ('type', 'Manuscript'),
+                            ('year', '856'),
+                            ('pages', '625'),
+                            ('CN', 'Sinai ar. NF Parch 8'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict([]),
+                    ),
+                )
+            ]
+        ),
+        preamble=[],
+    )
 
 
 class TestMultiEntry(ParserTest, TestCase):
@@ -345,6 +422,6 @@ class TestBook(ParserTest, TestCase):
 
 def test_parse_file():
     parser = _TestParser()
-    parser.parse_file(files_dir/"Shannon1948.ris")
+    parser.parse_file(files_dir / "Shannon1948.ris")
     result = parser.data
     assert result == shannon1948

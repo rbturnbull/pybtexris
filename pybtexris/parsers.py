@@ -170,13 +170,15 @@ class RISParser(BaseParser):
         for code, values in ris_dict.items():
             entry.fields[code] = ", ".join(values)
 
+        
         if not entry_key:
             people = [x[0] for x in entry.persons.values()]
             if people:
                 first_author = people[0]
                 entry_key = "-".join(first_author.last_names).replace(" ", ".")
             elif "title" in entry.fields:
-                entry_key = entry.fields["title"].replace(" ", ".")[:15]
+                TRUNCATE_TITLE = 20
+                entry_key = entry.fields["title"].replace(" ", ".")[:TRUNCATE_TITLE]
             else:
                 entry_key = "Unknown"
 
