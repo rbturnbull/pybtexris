@@ -120,8 +120,18 @@ class RISParser(BaseParser):
         add_field("SP", "pages")
         add_field("UR", "URL")
         add_field("PY", "year")
+        add_field("AB", "abstract")
         if "year" not in entry.fields:
             add_field("Y1", "year")
+
+        # Read ISBN or ISSN
+        sn = ris_dict.pop("SN", None)
+        if sn:
+            sn_digits = re.sub(r"\D","", sn)
+            sn_field = "issn" if len(sn_digits) == 8 else "isbn"
+            entry.fields[sn_field] = sn
+
+        entry_key = ris_dict.pop("ID", None)
 
         # Check if DA field could be a month
         da = ris_dict.get("DA", None)
@@ -148,17 +158,18 @@ class RISParser(BaseParser):
 
         print(entry)
 
-        people = list(*entry.persons.values())
-        if people:
-            first_author = people[0]
-            entry_key = "-".join(first_author.last_names).replace(" ", ".")
-        elif "title" in entry.fields:
-            entry_key = entry.fields["title"].replace(" ", ".")[:15]
-        else:
-            entry_key = "Unknown"
+        if not entry_key:
+            people = list(*entry.persons.values())
+            if people:
+                first_author = people[0]
+                entry_key = "-".join(first_author.last_names).replace(" ", ".")
+            elif "title" in entry.fields:
+                entry_key = entry.fields["title"].replace(" ", ".")[:15]
+            else:
+                entry_key = "Unknown"
 
-        if "year" in entry.fields:
-            entry_key += entry.fields["year"]
+            if "year" in entry.fields:
+                entry_key += entry.fields["year"]
 
         return entry_key,entry
 
