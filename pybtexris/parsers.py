@@ -33,10 +33,8 @@ class RISParser(BaseParser):
                     self.ris_type_to_bibtex[ris_type] = bibtex_type
                     self.ris_type_description[ris_type] = description
 
-        print(self.ris_type_to_bibtex)
-
     def parse_stream(self, stream):
-        text = stream.read()
+        text = stream.read().decode('utf-8')
         return self.parse_string(text)
 
     def process_entry(self, entry_text):
