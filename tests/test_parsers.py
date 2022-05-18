@@ -3,7 +3,9 @@ from itertools import zip_longest
 from pybtex.database import BibliographyData, Entry, Person
 from pybtex.utils import OrderedCaseInsensitiveDict
 from pybtexris import RISParser
+from pathlib import Path
 
+files_dir = Path(__file__).parent/"files"
 
 class _TestParser(RISParser):
     def __init__(self, *args, **kwargs):
@@ -13,6 +15,30 @@ class _TestParser(RISParser):
     def handle_error(self, error):
         self.errors.append(error)
 
+
+shannon1948 = BibliographyData(
+    entries=OrderedCaseInsensitiveDict(
+        [
+            (
+                'Shannon1948',
+                Entry(
+                    'article',
+                    fields=[
+                        ('type', 'Journal Article'),
+                        ('title', 'A Mathematical Theory of Communication'),
+                        ('journal', 'Bell System Technical Journal'),
+                        ('volume', '27'),
+                        ('pages', '379--423'),
+                        ('year', '1948'),
+                        ('month', 'July'),
+                    ],
+                    persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])]),
+                ),
+            )
+        ]
+    ),
+    preamble=[],
+)
 
 class ParserTest(object):
     input_string = None
@@ -62,29 +88,7 @@ class TestSingleJournal(ParserTest, TestCase):
         VL  - 27
         ER  - 
     """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
-    correct_result = BibliographyData(
-        entries=OrderedCaseInsensitiveDict(
-            [
-                (
-                    'Shannon1948',
-                    Entry(
-                        'article',
-                        fields=[
-                            ('type', 'Journal Article'),
-                            ('title', 'A Mathematical Theory of Communication'),
-                            ('journal', 'Bell System Technical Journal'),
-                            ('volume', '27'),
-                            ('pages', '379--423'),
-                            ('year', '1948'),
-                            ('month', 'July'),
-                        ],
-                        persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])]),
-                    ),
-                )
-            ]
-        ),
-        preamble=[],
-    )
+    correct_result = shannon1948
 
 
 class TestMultiEntry(ParserTest, TestCase):
@@ -306,3 +310,10 @@ class TestBook(ParserTest, TestCase):
         ),
         preamble=[],
     )
+
+
+def test_parse_file():
+    parser = _TestParser()
+    parser.parse_file(files_dir/"Shannon1948.ris")
+    result = parser.data
+    assert result == shannon1948

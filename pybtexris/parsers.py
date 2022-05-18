@@ -13,6 +13,7 @@ class RISParser(BaseParser):
     Parser for RIS files.
     """
     default_suffix = '.ris'
+    unicode_io = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,7 +35,7 @@ class RISParser(BaseParser):
                     self.ris_type_description[ris_type] = description
 
     def parse_stream(self, stream):
-        text = stream.read().decode('utf-8')
+        text = stream.read()
         return self.parse_string(text)
 
     def process_entry(self, entry_text):
@@ -50,9 +51,6 @@ class RISParser(BaseParser):
 
             code = m.group(1)
             value = m.group(2)
-
-            if code == "ER":
-                continue
             
             ris_dict[code].append(value)
         
@@ -168,6 +166,7 @@ class RISParser(BaseParser):
                 entry.fields["pages"] = end_page
 
         # Add the remaining fields in the notes
+        ris_dict.pop("ER", None)
         for code, values in ris_dict.items():
             entry.fields[code] = ", ".join(values)
 
