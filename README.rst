@@ -1,5 +1,5 @@
 ============
-pybtex-ris
+pybtexris
 ============
 
 .. start-badges
@@ -19,4 +19,6 @@ pybtex-ris
     :target: https://robinpokorny.github.io/git3moji/
 
 .. end-badges
+
+A pybtex plugin for inputting and outputting RIS files.
 

@@ -25,11 +25,11 @@ testpaths = [
     "tests",
 ]
 
-[pybtex.database.input]
+[tool.poetry.plugins."pybtex.database.input"]
 "ris" = "pybtexris:RISParser"
 
-[pybtex.database.input.suffixes]
-".ris" = "pybtexris.RISParser"
+[tool.poetry.plugins."pybtex.database.input.suffixes"]
+".ris" = "pybtexris:RISParser"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
