@@ -93,11 +93,11 @@ class RISParser(BaseParser):
         add_person("ED", "editor")        
 
         # Read Other Fields
-        def add_field(code, bibtex_field):
+        def add_field(code, bibtex_field, delimiter=", "):
             values = ris_dict.pop(code, [])
             for value in values:
                 if bibtex_field in entry.fields:
-                    entry.fields[bibtex_field] += f"| {value}"
+                    entry.fields[bibtex_field] += f"{delimiter}{value}"
                 else:
                     entry.fields[bibtex_field] = value
 
@@ -105,7 +105,7 @@ class RISParser(BaseParser):
         if "title" not in entry.fields:
             add_field("T1", "title")
         add_field("JO", "journal")
-        
+
         bibtex_t2 = None
         if ris_type in ["ABST","INPR","JFULL","JOUR", "EJOUR"]:
             bibtex_t2 = "journal"
@@ -116,18 +116,35 @@ class RISParser(BaseParser):
         if bibtex_t2:
             add_field("T2", bibtex_t2)
             
+        bibtex_bt = bibtex_t2
+        if ris_type == "BOOK":
+            bibtex_bt = "title"
+        if bibtex_bt:
+            add_field("BT", bibtex_bt)
+
+        bibtex_t3 = None
+        if ris_type in ["BOOK","CTLG", "CLSWK", "COMP", "DATA", "MPCT", "MAP", "MULTI", "RPRT", "UNPB", "ELEC", "ADVS", "SLIDE", "SOUND", "VIDEO", "CHAP", "CONF", "DATA", "EBOOK", "ECHAP", "GOVDOC", "MUSIC", "SER"]:
+            bibtex_t3 = "series"
+        if bibtex_t3:
+            add_field("T3", bibtex_t3)
+            
+        add_field("PB", "publisher")
+        add_field("CY", "address")
         add_field("IS", "number")
         add_field("DO", "doi")
         add_field("VL", "volume")
         add_field("SP", "pages")
         add_field("UR", "url")
+        add_field("KW", "keywords", delimiter=" | ")
+        add_field("N1", "note", delimiter=" | ")
+        add_field("N2", "note", delimiter=" | ")
         add_field("PY", "year")
         add_field("AB", "abstract")
         if "year" not in entry.fields:
             add_field("Y1", "year")
 
         # Read ISBN or ISSN
-        serial_numbers = ris_dict.get("SN", [])
+        serial_numbers = ris_dict.pop("SN", [])
         for serial_number in serial_numbers:
             sn_digits = re.sub(r"\D","", serial_number)
             sn_field = "issn" if len(sn_digits) == 8 else "isbn"
@@ -159,7 +176,7 @@ class RISParser(BaseParser):
         print(entry)
 
         if not entry_key:
-            people = list(*entry.persons.values())
+            people = [x[0] for x in entry.persons.values()]
             if people:
                 first_author = people[0]
                 entry_key = "-".join(first_author.last_names).replace(" ", ".")
