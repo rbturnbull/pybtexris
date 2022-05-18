@@ -171,8 +171,6 @@ class RISParser(BaseParser):
         for code, values in ris_dict.items():
             entry.fields[code] = ", ".join(values)
 
-        print(entry)
-
         if not entry_key:
             people = [x[0] for x in entry.persons.values()]
             if people:

@@ -1,0 +1,6 @@
+[run]
+source = pybtexris
+
+[report]
+precision = 2
+
