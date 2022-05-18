@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 from pathlib import Path
 from pybtex.database.input import BaseParser
 from pybtex.database import BibliographyData, Entry, Person
@@ -43,7 +44,7 @@ class RISParser(BaseParser):
         https://github.com/aurimasv/translators/wiki/RIS-Tag-Map
         """
         # Read entry into dictionary
-        ris_dict = dict()
+        ris_dict = defaultdict(list)
         for line in entry_text.split('\n'):
             m = re.match(r"^([A-Z0-9]{2})\s*-\s*(.*)$", line.strip())
             if not m:
@@ -55,10 +56,11 @@ class RISParser(BaseParser):
             if code == "ER":
                 continue
             
-            ris_dict[code] = value
+            ris_dict[code].append(value)
         
         # Read type of entry
-        ris_type = ris_dict.pop("TY", "GEN")
+        ris_type = ris_dict.pop("TY", ["GEN"])
+        ris_type = ris_type[0]
         ris_description = None
         if ris_type in self.ris_type_description.values():
             index = self.ris_type_description.values().index(ris_type)
@@ -76,8 +78,8 @@ class RISParser(BaseParser):
         
         # Read People
         def add_person(code, role):
-            name = ris_dict.pop(code, None)
-            if name:
+            names = ris_dict.pop(code, [])
+            for name in names:
                 person = Person(name)
                 entry.add_person(person, role)
 
@@ -92,10 +94,10 @@ class RISParser(BaseParser):
 
         # Read Other Fields
         def add_field(code, bibtex_field):
-            value = ris_dict.pop(code, None)
-            if value:
+            values = ris_dict.pop(code, [])
+            for value in values:
                 if bibtex_field in entry.fields:
-                    entry.fields[bibtex_field] += f"| value"
+                    entry.fields[bibtex_field] += f"| {value}"
                 else:
                     entry.fields[bibtex_field] = value
 
@@ -118,43 +120,41 @@ class RISParser(BaseParser):
         add_field("DO", "doi")
         add_field("VL", "volume")
         add_field("SP", "pages")
-        add_field("UR", "URL")
+        add_field("UR", "url")
         add_field("PY", "year")
         add_field("AB", "abstract")
         if "year" not in entry.fields:
             add_field("Y1", "year")
 
         # Read ISBN or ISSN
-        sn = ris_dict.pop("SN", None)
-        if sn:
-            sn_digits = re.sub(r"\D","", sn)
+        serial_numbers = ris_dict.get("SN", [])
+        for serial_number in serial_numbers:
+            sn_digits = re.sub(r"\D","", serial_number)
             sn_field = "issn" if len(sn_digits) == 8 else "isbn"
-            entry.fields[sn_field] = sn
+            entry.fields[sn_field] = serial_number
 
-        entry_key = ris_dict.pop("ID", None)
+        entry_key = ris_dict.pop("ID", [None])
+        entry_key = entry_key[0]
 
         # Check if DA field could be a month
-        da = ris_dict.get("DA", None)
-        if da:
-            digital_month = da.isdigit() and (1 <= int(da) <= 12)
-            text_month = da[:3].lower() in ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+        dates = ris_dict.get("DA", [])
+        for date in dates:
+            digital_month = date.isdigit() and (1 <= int(date) <= 12)
+            text_month = date[:3].lower() in ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
             if digital_month or text_month:
-                entry.fields["month"] = da
+                entry.fields["month"] = date
                 ris_dict.pop("DA")
                 
-        value = ris_dict.pop("EP", None)
-        if value:
+        end_pages = ris_dict.pop("EP", [])
+        for end_page in end_pages:
             if "pages" in entry.fields:
-                entry.fields["pages"] += f"--{value}"
+                entry.fields["pages"] += f"--{end_page}"
             else:
-                entry.fields["pages"] = value
+                entry.fields["pages"] = end_page
 
-
-        for code, value in ris_dict.items():
-            if code == "TY":
-                continue
-
-            entry.fields[code] = value
+        # Add the remaining fields in the notes
+        for code, values in ris_dict.items():
+            entry.fields[code] = ", ".join(values)
 
         print(entry)
 

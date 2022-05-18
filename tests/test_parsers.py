@@ -190,41 +190,22 @@ class TestMultiAuthor(ParserTest, TestCase):
         ER  - 
     """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
     correct_result = BibliographyData(
-        entries=OrderedCaseInsensitiveDict(
-            [
-                (
-                    'Shannon1948',
-                    Entry(
-                        'article',
-                        fields=[
-                            ('type', 'Journal Article'),
-                            ('title', 'A Mathematical Theory of Communication'),
-                            ('journal', 'Bell System Technical Journal'),
-                            ('volume', '27'),
-                            ('pages', '379--423'),
-                            ('year', '1948'),
-                            ('month', 'July'),
-                        ],
-                        persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])]),
-                    ),
-                ),
-                (
-                    'Turing1937',
-                    Entry(
-                        'article',
-                        fields=[
-                            ('type', 'Journal Article'),
-                            ('title', 'On computable numbers, with an application to the Entscheidungsproblem'),
-                            ('journal', 'Proc. of London Mathematical Society'),
-                            ('number', '1'),
-                            ('volume', '47'),
-                            ('pages', '230--265'),
-                            ('year', '1937'),
-                        ],
-                        persons=OrderedCaseInsensitiveDict([('author', [Person('Turing, Alan Mathison')])]),
-                    ),
-                ),
-            ]
-        ),
-        preamble=[],
-    )
+  entries=OrderedCaseInsensitiveDict([
+    ('Seemann2020', Entry('article',
+      fields=[
+        ('type', 'Journal Article'), 
+        ('title', 'Tracking the COVID-19 pandemic in Australia using genomics'), 
+        ('journal', 'Nature Communications'), 
+        ('number', '1'), 
+        ('doi', '10.1038/s41467-020-18314-x'), 
+        ('volume', '11'), 
+        ('pages', '4376'), 
+        ('url', 'https://doi.org/10.1038/s41467-020-18314-x'), 
+        ('year', '2020'), 
+        ('abstract', 'Genomic sequencing has significant potential to inform public health management for SARS-CoV-2. Here we report high-throughput genomics for SARS-CoV-2, sequencing 80% of cases in Victoria, Australia (population 6.24 million) between 6 January and 14 April 2020 (total 1,333 COVID-19 cases). We integrate epidemiological, genomic and phylodynamic data to identify clusters and impact of interventions. The global diversity of SARS-CoV-2 is represented, consistent with multiple importations. Seventy-six distinct genomic clusters were identified, including large clusters associated with social venues, healthcare and cruise ships. Sequencing sequential samples from 98 patients reveals minimal intra-patient SARS-CoV-2 genomic diversity. Phylodynamic modelling indicates a significant reduction in the effective viral reproductive number (Re) from 1.63 to 0.48 after implementing travel restrictions and physical distancing. Our data provide a concrete framework for the use of SARS-CoV-2 genomics in public health responses, including its use to rapidly identify SARS-CoV-2 transmission chains, increasingly important as social restrictions ease globally.'), 
+        ('issn', '2041-1723'), 
+        ('DA', '2020/09/01'), 
+        ('SN', '2041-1723')],
+      persons=OrderedCaseInsensitiveDict([('author', [Person('Seemann, Torsten'), Person('Lane, Courtney R.'), Person('Sherry, Norelle L.'), Person('Duchene, Sebastian'), Person('Gonçalves da Silva, Anders'), Person('Caly, Leon'), Person('Sait, Michelle'), Person('Ballard, Susan A.'), Person('Horan, Kristy'), Person('Schultz, Mark B.'), Person('Hoang, Tuyet'), Person('Easton, Marion'), Person('Dougall, Sally'), Person('Stinear, Timothy P.'), Person('Druce, Julian'), Person('Catton, Mike'), Person('Sutton, Brett'), Person('van Diemen, Annaliese'), Person('Alpren, Charles'), Person('Williamson, Deborah A.'), Person('Howden, Benjamin P.')])])))]),
+
+  preamble=[])
