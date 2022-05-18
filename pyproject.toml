@@ -5,6 +5,8 @@ description = "A pybtex plugin for inputting and outputting RIS files."
 authors = ["Robert Turnbull <robert.turnbull@unimelb.edu.au>"]
 license = "Apache-2.0"
 readme = "README.rst"
+homepage = "https://github.com/rbturnbull/pybtexris"
+repository = "https://github.com/rbturnbull/pybtexris"
 
 [tool.poetry.dependencies]
 python = "^3.7.1"

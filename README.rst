@@ -20,5 +20,31 @@ pybtexris
 
 .. end-badges
 
-A pybtex plugin for inputting and outputting RIS files.
+A pybtex plugin for inputting RIS files. (Outputting still to come.)
 
+Installation
+============
+
+Install pybtexris from PyPI using pip::
+
+    pip install pybtexris
+
+Command-line usage
+==================
+
+To convert an RIS file to another format, use the ``pybtex-convert`` command. For example::
+
+    pybtex-convert bibliography.ris bibliography.bib
+
+The extension of the output file must be supported by ``pybtex`` or an associated plugin.
+
+To format an RIS file into a human-readable bibliography, use the pybtex-format command. For example::
+
+    pybtex-format bibliography.ris bibliography.txt
+
+For more information, see `the documentation for pybtex <https://docs.pybtex.org/cmdline.html>`_.
+
+Credit
+==================
+
+Written by Robert Turnbull (Melbourne Data Analytics Platform)
