@@ -47,4 +47,4 @@ For more information, see `the documentation for pybtex <https://docs.pybtex.org
 Credit
 ==================
 
-Written by Robert Turnbull (Melbourne Data Analytics Platform)
+Robert Turnbull (Melbourne Data Analytics Platform, University of Melbourne)
