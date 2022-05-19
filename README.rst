@@ -13,14 +13,14 @@ pybtexris
     :target: https://github.com/psf/black
     
 .. |coverage badge| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/rbturnbull/665c8745fce7077155f99ad694a7e762/raw/coverage-badge.json
-    :target: https://rbturnbull.github.io/pybtexris/coverage/
+    :target: https://rbturnbull.github.io/pybtexris/
 
 .. |git3moji badge| image:: https://img.shields.io/badge/git3moji-%E2%9A%A1%EF%B8%8F%F0%9F%90%9B%F0%9F%93%BA%F0%9F%91%AE%F0%9F%94%A4-fffad8.svg
     :target: https://robinpokorny.github.io/git3moji/
 
 .. end-badges
 
-A pybtex plugin for inputting RIS files. (Outputting still to come.)
+A pybtex plugin for working with RIS files.
 
 Installation
 ============
@@ -48,3 +48,5 @@ Credit
 ==================
 
 Robert Turnbull (Melbourne Data Analytics Platform, University of Melbourne)
+
+I have also created `pybtexnbib <https://github.com/rbturnbull/pybtexnbib>`_ to handle RIS files.
