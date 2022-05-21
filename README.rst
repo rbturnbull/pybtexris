@@ -44,9 +44,55 @@ To format an RIS file into a human-readable bibliography, use the pybtex-format 
 
 For more information, see `the documentation for pybtex <https://docs.pybtex.org/cmdline.html>`_.
 
+Programmatic usage
+==================
+
+RIS files can be formatted into a human-readable bibliography as a string as follows:
+
+.. code-block:: python
+
+    from pybtex import format_from_file
+    bibliography_string = format_from_file(
+        "path/to/file.ris", 
+        style="plain", 
+        output_backend="plaintext",
+        bib_format="ris",
+    )
+
+Multiple RIS files can be formatted in a similar way:
+
+.. code-block:: python
+
+    from pybtex import format_from_files
+    bibliography_string = format_from_files(
+        ["path/to/file1.ris", "path/to/file2.ris"],
+        style="plain", 
+        output_backend="plaintext",
+        bib_format="ris",
+    )
+
+So that RIS files can be combined with bibliography files of other formats (such as BibTeX), 
+`pybtexris` also adds `SuffixParser` to the list of plugins which pybtex can use.
+The user just needs to give ``suffix`` as the argument to ``bib_format``.
+
+.. code-block:: python
+
+    from pybtex import format_from_files
+    result = format_from_files(
+        ["path/to/file1.ris", "path/to/file2.bib"],
+        style="plain", 
+        output_backend="plaintext",
+        bib_format="suffix",
+    )
+
+The parsers for the files for other formats need to be registered on the ``pybtex.database.input.suffixes``
+entry point as discussed pybtex `plugin documentation <https://docs.pybtex.org/api/plugins.html>`_.
+To combine with NBIB citation files, please use the `pybtexnbib <https://github.com/rbturnbull/pybtexnbib>`_ plugin.
+
+For more information on programmatic use of pybtex, 
+see `the documentation of the Python API of pybtex <https://docs.pybtex.org/api/index.html>`_.
+
 Credit
 ==================
 
 Robert Turnbull (Melbourne Data Analytics Platform, University of Melbourne)
-
-I have also created `pybtexnbib <https://github.com/rbturnbull/pybtexnbib>`_ to handle RIS files.
