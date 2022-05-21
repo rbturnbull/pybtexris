@@ -2,7 +2,7 @@ from unittest import TestCase
 from itertools import zip_longest
 from pybtex.database import BibliographyData, Entry, Person
 from pybtex.utils import OrderedCaseInsensitiveDict
-from pybtexris import RISParser
+from pybtexris import RISParser, SuffixParser
 from pathlib import Path
 
 files_dir = Path(__file__).parent / "files"
@@ -425,3 +425,96 @@ def test_parse_file():
     parser.parse_file(files_dir / "Shannon1948.ris")
     result = parser.data
     assert result == shannon1948
+
+
+def test_suffix_parser_with_suffix():
+    parser = SuffixParser()
+    parser.parse_file(files_dir / "Shannon1948", ".ris")
+    result = parser.data
+    assert result == shannon1948
+
+
+def test_suffix_parser_parse_files():
+    parser = SuffixParser()
+    parser.parse_files(
+        [
+            files_dir / "abramowitz+stegun.bib",
+            files_dir / "Shannon1948.ris",
+            files_dir / "Knuth1986.bib",
+        ]
+    )
+    result = parser.data
+    print(result)
+    assert result == BibliographyData(
+        entries=OrderedCaseInsensitiveDict(
+            [
+                (
+                    'abramowitz+stegun',
+                    Entry(
+                        'book',
+                        fields=[
+                            (
+                                'title',
+                                'Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables',
+                            ),
+                            ('publisher', 'Dover'),
+                            ('year', '1964'),
+                            ('address', 'New York City'),
+                            ('edition', 'ninth Dover printing, tenth GPO printing'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict(
+                            [('author', [Person('{Abramowitz}, Milton'), Person('{Stegun}, Irene A.')])]
+                        ),
+                    ),
+                ),
+                (
+                    'Shannon1948',
+                    Entry(
+                        'article',
+                        fields=[
+                            ('type', 'Journal Article'),
+                            ('title', 'A Mathematical Theory of Communication'),
+                            ('journal', 'Bell System Technical Journal'),
+                            ('volume', '27'),
+                            ('pages', '379--423'),
+                            ('year', '1948'),
+                            ('month', 'July'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict([('author', [Person('Shannon, Claude E.')])]),
+                    ),
+                ),
+                (
+                    'Knuth1986',
+                    Entry(
+                        'book',
+                        fields=[
+                            ('year', '1986'),
+                            ('title', 'The {\\TeX} Book'),
+                            ('publisher', 'Addison-Wesley Professional'),
+                        ],
+                        persons=OrderedCaseInsensitiveDict([('author', [Person('Knuth, Donald E.')])]),
+                    ),
+                ),
+            ]
+        ),
+        preamble=[
+            'Example taken from https://en.wikipedia.org/wiki/BibTeX',
+            'Example adapted from https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex',
+        ],
+    )
+
+
+def test_suffix_parser_single():
+    parser = SuffixParser()
+    single = parser.parse_file(files_dir / "abramowitz+stegun.bib")
+    parser = SuffixParser()
+    multi = parser.parse_files(
+        [
+            files_dir / "abramowitz+stegun.bib",
+        ]
+    )
+    print("Single")
+    print(single)
+    print("multi")
+    print(multi)
+    assert single == multi

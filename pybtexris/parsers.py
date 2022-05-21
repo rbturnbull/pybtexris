@@ -204,12 +204,12 @@ class SuffixParser(BaseParser):
     """
     def parse_file(self, filename, file_suffix=None):
         if file_suffix is not None:
-            filename = filename + file_suffix
+            filename = str(filename) + file_suffix
 
         file_data = database.parse_file(filename)
         self.data.add_entries(file_data.entries.items())
         if file_data._preamble:
-            self.data.add_to_preamble(file_data._preamble)
+            self.data._preamble.extend(file_data._preamble)
 
         return file_data
 
