@@ -1,6 +1,7 @@
 import re
 from collections import defaultdict
 from pathlib import Path
+from pybtex import database
 from pybtex.database.input import BaseParser
 from pybtex.database import BibliographyData, Entry, Person
 from pybtex.utils import OrderedCaseInsensitiveDict
@@ -165,7 +166,7 @@ class RISParser(BaseParser):
             else:
                 entry.fields["pages"] = end_page
 
-        # Add the remaining fields in the notes
+        # Add the remaining fields with the RIS code as the field name
         ris_dict.pop("ER", None)
         for code, values in ris_dict.items():
             entry.fields[code] = ", ".join(values)
@@ -197,4 +198,18 @@ class RISParser(BaseParser):
         return self.data
 
 
+class SuffixParser(BaseParser):
+    """
+    A parser which chooses the parser based on the suffix of each file given to it.
+    """
+    def parse_file(self, filename, file_suffix=None):
+        if file_suffix is not None:
+            filename = filename + file_suffix
+
+        file_data = database.parse_file(filename)
+        self.data.add_entries(file_data.entries.items())
+        if file_data._preamble:
+            self.data.add_to_preamble(file_data._preamble)
+
+        return file_data
 

@@ -1,1 +1,1 @@
-from .parsers import RISParser
+from .parsers import RISParser, SuffixParser

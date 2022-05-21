@@ -29,6 +29,7 @@ testpaths = [
 
 [tool.poetry.plugins."pybtex.database.input"]
 "ris" = "pybtexris:RISParser"
+"suffix" = "pybtexris:SuffixParser"
 
 [tool.poetry.plugins."pybtex.database.input.suffixes"]
 ".ris" = "pybtexris:RISParser"
