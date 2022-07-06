@@ -420,6 +420,35 @@ class TestBook(ParserTest, TestCase):
     )
 
 
+class TestUnicodeName(ParserTest, TestCase):
+    input_string = """
+        TY  - JOUR
+        AU  - Shännón, Claude E.
+        PY  - 1948
+        DA  - July
+        TI  - A Mathematical Theory of Communication
+        T2  - Bell System Technical Journal
+        SP  - 379
+        EP  - 423
+        VL  - 27
+        ER  - 
+    """  # taken from https://en.wikipedia.org/wiki/RIS_(file_format)
+    correct_result = BibliographyData(
+  entries=OrderedCaseInsensitiveDict([
+    ('Shannon1948', Entry('article',
+      fields=[
+        ('type', 'Journal Article'), 
+        ('title', 'A Mathematical Theory of Communication'), 
+        ('journal', 'Bell System Technical Journal'), 
+        ('volume', '27'), 
+        ('pages', '379--423'), 
+        ('year', '1948'), 
+        ('month', 'July')],
+      persons=OrderedCaseInsensitiveDict([('author', [Person('Shännón, Claude E.')])])))]),
+
+  preamble=[])
+
+
 def test_parse_file():
     parser = _TestParser()
     parser.parse_file(files_dir / "Shannon1948.ris")

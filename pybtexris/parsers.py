@@ -4,15 +4,46 @@ from pathlib import Path
 from pybtex import database
 from pybtex.database.input import BaseParser
 from pybtex.database import BibliographyData, Entry, Person
-from pybtex.utils import OrderedCaseInsensitiveDict
 import csv
+import unicodedata
 
-data_dir = Path(__file__).parent/"data"
+
+def clean_entry_key(entry_key):
+    """
+    ensure that the entry key is only in ASCII encoding
+    """
+    return unicodedata.normalize('NFKD', entry_key).encode('ASCII', 'ignore').decode("ascii")
+
+
+def get_entry_key(entry):
+    """
+    Builds an entry key from an entry
+    """
+    people = [x[0] for x in entry.persons.values()]
+    if people:
+        first_author = people[0]
+        entry_key = "-".join(first_author.last_names).replace(" ", ".")
+    elif "title" in entry.fields:
+        TRUNCATE_TITLE = 20
+        entry_key = entry.fields["title"].replace(" ", ".")[:TRUNCATE_TITLE]
+    else:
+        entry_key = "Unknown"
+
+    if "year" in entry.fields:
+        entry_key += entry.fields["year"]
+
+    entry_key = clean_entry_key(entry_key)
+    return entry_key
+
+
+data_dir = Path(__file__).parent / "data"
+
 
 class RISParser(BaseParser):
     """
     Parser for RIS files.
     """
+
     default_suffix = '.ris'
     unicode_io = True
 
@@ -21,10 +52,10 @@ class RISParser(BaseParser):
         self.ris_type_to_bibtex = {}
         self.ris_type_description = {}
 
-        with open(data_dir/"types.csv") as f:
+        with open(data_dir / "types.csv") as f:
             reader = csv.reader(f, delimiter=',')
-            
-            #skip the header
+
+            # skip the header
             next(reader, None)
             for row in reader:
                 ris_types = row[0]
@@ -52,9 +83,9 @@ class RISParser(BaseParser):
 
             code = m.group(1)
             value = m.group(2)
-            
+
             ris_dict[code].append(value)
-        
+
         # Read type of entry
         ris_type = ris_dict.pop("TY", ["GEN"])
         ris_type = ris_type[0]
@@ -63,7 +94,7 @@ class RISParser(BaseParser):
             index = list(self.ris_type_description.values()).index(ris_type)
             ris_description = ris_type
             ris_type = list(self.ris_type_description.keys())[index]
-            
+
         ris_type = ris_type.upper()
         if not ris_description:
             ris_description = self.ris_type_description[ris_type]
@@ -72,7 +103,7 @@ class RISParser(BaseParser):
         bibtex_type = self.ris_type_to_bibtex.get(ris_type, "misc")
         entry = Entry(bibtex_type)
         entry.fields["type"] = ris_description
-        
+
         # Read People
         def add_person(code, role):
             names = ris_dict.pop(code, [])
@@ -82,12 +113,34 @@ class RISParser(BaseParser):
 
         add_person("AU", "author")
         add_person("A1", "author")
-        editor_role = ["ANCIENT", "BLOG", "BOOK", "CHAP", "CLSWK", "COMP", "DATA", "CPAPER", "CONF", "DICT", "EDBOOK", "EBOOK", "ECHAP", "ENCYC", "MAP", "MUSIC", "MULTI", "RPRT", "SER", "UNPB", "ELEC"]
+        editor_role = [
+            "ANCIENT",
+            "BLOG",
+            "BOOK",
+            "CHAP",
+            "CLSWK",
+            "COMP",
+            "DATA",
+            "CPAPER",
+            "CONF",
+            "DICT",
+            "EDBOOK",
+            "EBOOK",
+            "ECHAP",
+            "ENCYC",
+            "MAP",
+            "MUSIC",
+            "MULTI",
+            "RPRT",
+            "SER",
+            "UNPB",
+            "ELEC",
+        ]
         add_person("A2", "editor" if ris_type in editor_role else "author")
         editor_role += ["ADVS", "SLIDE", "SOUND", "VIDEO"]
         add_person("A3", "editor" if ris_type in editor_role else "author")
-        add_person("A4", "editor" if ris_type in editor_role else "author")        
-        add_person("ED", "editor")        
+        add_person("A4", "editor" if ris_type in editor_role else "author")
+        add_person("ED", "editor")
 
         # Read Other Fields
         def add_field(code, bibtex_field, delimiter=", "):
@@ -104,15 +157,15 @@ class RISParser(BaseParser):
         add_field("JO", "journal")
 
         bibtex_t2 = None
-        if ris_type in ["ABST","INPR","JFULL","JOUR", "EJOUR"]:
+        if ris_type in ["ABST", "INPR", "JFULL", "JOUR", "EJOUR"]:
             bibtex_t2 = "journal"
-        elif ris_type in ["ANCIENT","CHAP", "ECHAP"]:
+        elif ris_type in ["ANCIENT", "CHAP", "ECHAP"]:
             bibtex_t2 = "booktitle"
-        elif ris_type in ["BOOK","CTLG", "CLSWK", "COMP", "DATA", "MPCT", "MAP", "MULTI", "RPRT", "UNPB", "ELEC"]:
+        elif ris_type in ["BOOK", "CTLG", "CLSWK", "COMP", "DATA", "MPCT", "MAP", "MULTI", "RPRT", "UNPB", "ELEC"]:
             bibtex_t2 = "series"
         if bibtex_t2:
             add_field("T2", bibtex_t2)
-            
+
         bibtex_bt = bibtex_t2
         if ris_type == "BOOK":
             bibtex_bt = "title"
@@ -120,11 +173,35 @@ class RISParser(BaseParser):
             add_field("BT", bibtex_bt)
 
         bibtex_t3 = None
-        if ris_type in ["BOOK","CTLG", "CLSWK", "COMP", "DATA", "MPCT", "MAP", "MULTI", "RPRT", "UNPB", "ELEC", "ADVS", "SLIDE", "SOUND", "VIDEO", "CHAP", "CONF", "DATA", "EBOOK", "ECHAP", "GOVDOC", "MUSIC", "SER"]:
+        if ris_type in [
+            "BOOK",
+            "CTLG",
+            "CLSWK",
+            "COMP",
+            "DATA",
+            "MPCT",
+            "MAP",
+            "MULTI",
+            "RPRT",
+            "UNPB",
+            "ELEC",
+            "ADVS",
+            "SLIDE",
+            "SOUND",
+            "VIDEO",
+            "CHAP",
+            "CONF",
+            "DATA",
+            "EBOOK",
+            "ECHAP",
+            "GOVDOC",
+            "MUSIC",
+            "SER",
+        ]:
             bibtex_t3 = "series"
         if bibtex_t3:
             add_field("T3", bibtex_t3)
-            
+
         add_field("PB", "publisher")
         add_field("CY", "address")
         add_field("IS", "number")
@@ -143,7 +220,7 @@ class RISParser(BaseParser):
         # Read ISBN or ISSN
         serial_numbers = ris_dict.pop("SN", [])
         for serial_number in serial_numbers:
-            sn_digits = re.sub(r"\D","", serial_number)
+            sn_digits = re.sub(r"\D", "", serial_number)
             sn_field = "issn" if len(sn_digits) == 8 else "isbn"
             entry.fields[sn_field] = serial_number
 
@@ -154,11 +231,24 @@ class RISParser(BaseParser):
         dates = ris_dict.get("DA", [])
         for date in dates:
             digital_month = date.isdigit() and (1 <= int(date) <= 12)
-            text_month = date[:3].lower() in ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+            text_month = date[:3].lower() in [
+                "jan",
+                "feb",
+                "mar",
+                "apr",
+                "may",
+                "jun",
+                "jul",
+                "aug",
+                "sep",
+                "oct",
+                "nov",
+                "dec",
+            ]
             if digital_month or text_month:
                 entry.fields["month"] = date
                 ris_dict.pop("DA")
-                
+
         end_pages = ris_dict.pop("EP", [])
         for end_page in end_pages:
             if "pages" in entry.fields:
@@ -171,22 +261,12 @@ class RISParser(BaseParser):
         for code, values in ris_dict.items():
             entry.fields[code] = ", ".join(values)
 
-        
         if not entry_key:
-            people = [x[0] for x in entry.persons.values()]
-            if people:
-                first_author = people[0]
-                entry_key = "-".join(first_author.last_names).replace(" ", ".")
-            elif "title" in entry.fields:
-                TRUNCATE_TITLE = 20
-                entry_key = entry.fields["title"].replace(" ", ".")[:TRUNCATE_TITLE]
-            else:
-                entry_key = "Unknown"
+            entry_key = get_entry_key(entry)
+        else:
+            entry_key = clean_entry_key(entry_key)
 
-            if "year" in entry.fields:
-                entry_key += entry.fields["year"]
-
-        return entry_key,entry
+        return entry_key, entry
 
     def parse_string(self, text):
         self.unnamed_entry_counter = 1
@@ -202,6 +282,7 @@ class SuffixParser(BaseParser):
     """
     A parser which chooses the parser based on the suffix of each file given to it.
     """
+
     def parse_file(self, filename, file_suffix=None):
         if file_suffix is not None:
             filename = str(filename) + file_suffix
@@ -212,4 +293,3 @@ class SuffixParser(BaseParser):
             self.data._preamble.extend(file_data._preamble)
 
         return file_data
-
