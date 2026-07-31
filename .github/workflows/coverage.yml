@@ -38,14 +38,11 @@ jobs:
           poetry env use "${{ matrix.python-version }}"
           poetry install
 
-      - name: Build Sphinx docs
-        run: poetry run sphinx-build -b html docs gh-pages
-
       - name: Run tests and generate coverage report
         run: |
           poetry run coverage run -m pytest
           echo "COVERAGE=$(poetry run coverage report --precision 2 | grep TOTAL | tr -s ' ' | cut -f 4 -d " ")" >> $GITHUB_ENV
-          poetry run coverage html --directory gh-pages/coverage
+          poetry run coverage html --directory gh-pages
           rm -f gh-pages/coverage/.gitignore
 
       - name: Setup Pages
