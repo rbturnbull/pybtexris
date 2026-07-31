@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybtexris"
-version = "0.1.3"
+version = "0.2.0"
 description = "A pybtex plugin for working with RIS files."
 authors = ["Robert Turnbull <robert.turnbull@unimelb.edu.au>"]
 license = "Apache-2.0"
