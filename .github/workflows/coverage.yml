@@ -1,45 +1,73 @@
-# Based on https://github.com/actions/starter-workflows/blob/main/ci/python-package.yml
-name: pipeline
+name: docs
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10"]
-
+        python-version: ["3.11"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Install poetry
-      run: pipx install poetry
-    - name: Install dependencies for Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'poetry'
-    - run: poetry install
+      - uses: actions/checkout@v7
 
-    - name: Testing
-      run: |
-        poetry run coverage run -m pytest
-        poetry run coverage html --directory gh-pages
-        echo "COVERAGE=$(poetry run coverage report --precision 2 | grep TOTAL | tr -s ' ' | cut -f 4 -d " ")" >> $GITHUB_ENV
+      - name: Install poetry
+        run: pipx install poetry
 
-    - name: Create Badge
-      uses: schneegans/dynamic-badges-action@v1.1.0 # instructions here: https://github.com/Schneegans/dynamic-badges-action
-      with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: 665c8745fce7077155f99ad694a7e762
-        filename: coverage-badge.json
-        label: coverage
-        message: ${{ env.COVERAGE }}
-        color: green
+      - name: Initialise Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
 
-    - name: Deploy 🚀
-      uses: JamesIves/github-pages-deploy-action@4.1.5
-      with:
-        branch: gh-pages # The branch the action should deploy to.
-        folder: gh-pages # The folder the action should deploy.
+      - name: Install dependencies for Python ${{ matrix.python-version }}
+        run: |
+          poetry env use "${{ matrix.python-version }}"
+          poetry install
+
+      - name: Build Sphinx docs
+        run: poetry run sphinx-build -b html docs gh-pages
+
+      - name: Run tests and generate coverage report
+        run: |
+          poetry run coverage run -m pytest
+          echo "COVERAGE=$(poetry run coverage report --precision 2 | grep TOTAL | tr -s ' ' | cut -f 4 -d " ")" >> $GITHUB_ENV
+          poetry run coverage html --directory gh-pages/coverage
+          rm -f gh-pages/coverage/.gitignore
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: 'gh-pages'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+
+      - name: Create Coverage Badge
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth:  ${{ secrets.GIST_SECRET }} 
+          gistID: 665c8745fce7077155f99ad694a7e762
+          filename: coverage-badge.json
+          label: coverage
+          message:  ${{ env.COVERAGE }} 
+          color: green
+
