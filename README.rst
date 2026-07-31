@@ -95,4 +95,4 @@ see `the documentation of the Python API of pybtex <https://docs.pybtex.org/api/
 Credit
 ==================
 
-Robert Turnbull (Melbourne Data Analytics Platform, University of Melbourne)
+`Robert Turnbull <https://robturnbull.com>`_ (Melbourne Data Analytics Platform, University of Melbourne)
